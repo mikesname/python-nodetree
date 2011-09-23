@@ -2,6 +2,8 @@
 Base class for OCR nodes.
 """
 
+from __future__ import absolute_import
+
 import sys
 import textwrap
 import logging
@@ -10,8 +12,8 @@ logging.basicConfig(format=FORMAT)
 LOGGER = logging.getLogger("Node")
 LOGGER.setLevel(logging.INFO)
 
-import cache
-import registry
+from . import cache, registry
+
 
 class NodeError(Exception):
     def __init__(self, node, msg):

@@ -2,9 +2,12 @@
 Nodetree decorators.
 """
 
+from __future__ import absolute_import
+
 import inspect
 import textwrap
-import node
+
+from . import node
 
 
 def underscore_to_camelcase(value):
