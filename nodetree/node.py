@@ -65,10 +65,6 @@ class NodeType(type):
         if attrs.pop("abstract", None) or not attrs.get("autoregister", True):
             return new(cls, name, bases, attrs)
 
-        # all non-abstract nodes should have a process function
-        assert attrs.get("process") is not None, "Non-abstract nodes" \
-                "inheriting from Node should define a 'process' function"
-
         # Automatically generate missing/empty name, description, arity.
         autoname = False
         if not attrs.get("name"):
