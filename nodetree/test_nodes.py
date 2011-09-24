@@ -6,7 +6,12 @@ from __future__ import absolute_import
 
 import types
 
-from . import node
+from . import node, decorators
+
+
+@decorators.makenode(types.IntType, types.IntType)
+def add_five(input):
+    return input + 5
 
 
 class Number(node.Node):
