@@ -30,13 +30,16 @@ class NodeTests(unittest.TestCase):
 
     def test_add(self):
         t = self.script.get_terminals()[0]
-        self.assertEqual(t.label, "Add")
-        self.assertEqual(t.eval(), 5)
+        self.assertEqual(t.label, "AddFive")
+        self.assertEqual(t.eval(), 10)
 
         op = self.script.get_node("Add")
         op.set_param("operator", "*")
         self.assertEqual(op._params.get("operator"), "*")
         self.assertEqual(op.eval(), 6)
+
+        a5 = self.script.get_node("AddFive")
+        self.assertEqual(a5.eval(), op.eval() + 5)
 
     def test_set_invalid_value(self):
         n = self.script.get_node("Add")
@@ -48,8 +51,10 @@ class NodeTests(unittest.TestCase):
         n1 = s.add_node("test_nodes.Number", "Val1", (("num", 2),))
         n2 = s.add_node("test_nodes.Number", "Val2", (("num", 3),))
         n3 = s.add_node("test_nodes.Arithmetic", "Add", (("operator", "+"),))
+        n4 = s.add_node("test_nodes.AddFive", "AddFive", ())
         n3.set_input(0, n1)
         n3.set_input(1, n2)
+        n4.set_input(0, n3)
         return s
 
 
