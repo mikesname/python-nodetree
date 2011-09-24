@@ -41,7 +41,7 @@ class makenode(object):
         doc = fun.__doc__ if not fun.__doc__ is None \
                 else "No description provided"
         clsname = upper_camelcase(fun.__name__)
-        ns = upper_camelcase(fun.__module__.split(".")[-1])
+        ns = fun.__module__.split(".")[-1]
         clsdict = dict(
             __module__ = fun.__module__,
             __doc__ = doc,
@@ -49,8 +49,8 @@ class makenode(object):
             arity = len(self.intypes),
             intypes = self.intypes,
             outtype = self.outtype,
-            description = textwrap.dedent(fun.__doc__),
-            name = "%s::%s" % (ns, clsname),
+            description = textwrap.dedent(doc),
+            name = "%s.%s" % (ns, clsname),
         )
         clsdict.update(self.kwargs)
         return type(clsname + "Node", (node.Node,), clsdict)()
