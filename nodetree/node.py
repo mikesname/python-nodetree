@@ -317,6 +317,14 @@ class Node(object):
             return self._inputs[self.passthrough].first_active()
         return self
 
+    def early_eval(self):
+        """Gather data from inputs and run the process
+        function.  This can be overridden in subclasses
+        for nodes that need to do tricksy things like
+        conditional evaluation of inputs (i.e. Switch)"""
+        args = [self.get_input_data(i) for i in range(len(self.intypes))]
+        return self.process(*args)
+
     def eval(self):
         """
         Eval the node.
@@ -334,8 +342,7 @@ class Node(object):
             return self._cacher.get_cache(self)
         self.eval_inputs()
         self.logger.debug("Evaluating '%s' Node", self)
-        args = [self.eval_input(i) for i in range(len(self.intypes))]
-        data = self.process(*args)
+        data = self.early_eval()
         self._cacher.set_cache(self, data)
         return data
 
