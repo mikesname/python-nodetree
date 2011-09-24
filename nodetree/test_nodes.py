@@ -17,7 +17,7 @@ class Number(node.Node):
             dict(name="num", value=0),
     ]
 
-    def _eval(self):
+    def process(self):
         return self._params.get("num")
 
 
@@ -31,10 +31,8 @@ class Arithmetic(node.Node):
         ]),
     ]
 
-    def _eval(self):
+    def process(self, lhs, rhs):
         op = self._params.get("operator")
-        lhs = self.eval_input(0)
-        rhs = self.eval_input(1)
         if op == "+":
             return lhs + rhs
         elif op == "-":
