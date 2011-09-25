@@ -231,24 +231,23 @@ class Node(object):
             return self._inputdata[num]
         return self._inputdata[num]
 
-    def validate(self, skipinputs=False):
+    def validate_all(self):
         """
         Check params are present and correct.
         """
-        if self.arity > 0 and not skipinputs:
-            for n in self._inputs:
-                if n is not None:
-                    n.validate()
-        self._validate()                    
+        for n in self._inputs:
+            if n is not None:
+                n.validate_all()
+        self.validate()                    
 
-    def _validate(self):
+    def validate(self):
         """
         Check the node can execute properly.
         """
-        self._validate_inputs()
-        self._validate_parameters()
+        self.validate_inputs()
+        self.validate_parameters()
 
-    def _validate_inputs(self):
+    def validate_inputs(self):
         """Ensure parameters in/out have compatible types."""
         for i in range(len(self._inputs)):
             if self._inputs[i] is None:
@@ -258,7 +257,7 @@ class Node(object):
                         "incorrect input type '%s' for input '%d': should be '%s'" % (
                             self._inputs[i].outtype.__name__, i, self.intypes[i].__name__))
 
-    def _validate_parameters(self):
+    def validate_parameters(self):
         """Ensure parameters are sane."""
         for p in self.parameters:
             choices = p.get("choices")

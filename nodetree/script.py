@@ -77,7 +77,7 @@ class Script(object):
         errors = {}
         for name, n in self._tree.iteritems():
             try:
-                n.validate(skipinputs=True)
+                n.validate()
             except node.ValidationError, err:
                 errors[name] = err.message
         return errors                
