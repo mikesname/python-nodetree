@@ -12,29 +12,8 @@ logging.basicConfig(format=FORMAT)
 LOGGER = logging.getLogger("Node")
 LOGGER.setLevel(logging.INFO)
 
-from . import cache, registry
+from . import cache, registry, exceptions
 
-
-class NodeError(Exception):
-    def __init__(self, node, msg):
-        super(NodeError, self).__init__("%s: %s (arity: %d)" % (node.label, msg, node.arity))
-        self.node = node
-        self.message = msg
-
-class UnsetParameterError(NodeError):
-    pass
-
-class ValidationError(NodeError):
-    pass
-
-class InvalidParameterError(NodeError):
-    pass
-
-class InputOutOfRange(NodeError):
-    pass
-
-class CircularDagError(NodeError):
-    pass
 
 def noop_abort_func(*args):
     """
@@ -152,7 +131,7 @@ class Node(object):
         Add a parent node.
         """
         if self == n:
-            raise CircularDagError(self, "added as parent to self")
+            raise exceptions.CircularDagError("added as parent to self", self)
         if not n in self._parents:
             self._parents.append(n)
 
@@ -168,7 +147,7 @@ class Node(object):
         Get an input.
         """
         if num > len(self._inputs) - 1:
-            raise InputOutOfRange(self, "Input '%d'" % num)
+            raise exceptions.InputOutOfRangeError("Input '%d'" % num, self)
         return self._inputs[num]
 
     def inputs(self):
@@ -185,7 +164,7 @@ class Node(object):
         node: input node
         """
         if num > len(self._inputs) - 1:
-            raise InputOutOfRange(self, "Input '%d'" % num)
+            raise exceptions.InputOutOfRange("Input '%d'" % num, self)
         if n is not None:
             n.add_parent(self)
         self._inputs[num] = n
@@ -251,11 +230,12 @@ class Node(object):
         """Ensure parameters in/out have compatible types."""
         for i in range(len(self._inputs)):
             if self._inputs[i] is None:
-                raise ValidationError(self, "missing input '%d'" % i)
+                raise exceptions.ValidationError("missing input '%d'" % i, self)
             if not issubclass(self._inputs[i].outtype, self.intypes[i]):
-                raise ValidationError(self,
+                raise exceptions.ValidationError(
                         "incorrect input type '%s' for input '%d': should be '%s'" % (
-                            self._inputs[i].outtype.__name__, i, self.intypes[i].__name__))
+                            self._inputs[i].outtype.__name__, i, self.intypes[i].__name__),
+                        self)
 
     def validate_parameters(self):
         """Ensure parameters are sane."""
@@ -265,9 +245,9 @@ class Node(object):
                 continue
             val = self._params.get(p.get("name"))
             if not val in choices:
-                raise ValidationError(self, 
+                raise exceptions.ValidationError( 
                         "parameter '%s'='%s' is not a valid value, must be one of: %s" % (
-                            p.get("name"), val, ", ".join(choices)))
+                            p.get("name"), val, ", ".join(choices)), self)
 
     def hash_value(self):
         """

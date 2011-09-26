@@ -4,7 +4,7 @@ Object representation of a Node script.
 
 from __future__ import absolute_import
 
-from . import node, registry
+from . import node, registry, exceptions
 
 
 class Script(object):
@@ -78,7 +78,7 @@ class Script(object):
         for name, n in self._tree.iteritems():
             try:
                 n.validate()
-            except node.ValidationError, err:
+            except exceptions.ValidationError, err:
                 errors[name] = err.message
         return errors                
 

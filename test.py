@@ -4,7 +4,7 @@ Nodetree test suite.
 
 import unittest
 
-from nodetree import node, script, cache, test_nodes
+from nodetree import node, script, cache, exceptions, test_nodes
 
 
 class TestScript(unittest.TestCase):
@@ -44,7 +44,7 @@ class NodeTests(unittest.TestCase):
     def test_set_invalid_value(self):
         n = self.script.get_node("Add")
         n.set_param("operator", "!")
-        self.assertRaises(node.ValidationError, n.validate)
+        self.assertRaises(exceptions.ValidationError, n.validate)
 
     def _buildTestScript(self):
         s = script.Script({})
