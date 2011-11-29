@@ -322,7 +322,7 @@ class Node(object):
         return data
 
     def __repr__(self):
-        return "<%s: %s: %s" % (self.__class__.__name__, self.name, self.label)
+        return "<%s: %s: %s>" % (self.__class__.__name__, self.name, self.label)
 
     def __str__(self):
         return "%s<%s>" % (self.label, self.name)
