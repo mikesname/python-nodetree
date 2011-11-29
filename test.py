@@ -41,6 +41,14 @@ class NodeTests(unittest.TestCase):
         a5 = self.script.get_node("AddFive")
         self.assertEqual(a5.eval(), op.eval() + 5)
 
+    def test_replace_node(self):
+        tn = self.script.new_node("test_nodes.Arithmetic", "Minus", (("operator", "-"),))
+        op = self.script.get_node("Add")
+        self.script.replace_node(op, tn)
+
+        term = self.script.get_node("AddFive")
+        self.assertEqual(term.eval(), 4)
+
     def test_set_invalid_value(self):
         n = self.script.get_node("Add")
         n.set_param("operator", "!")
