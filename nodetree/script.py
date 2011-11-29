@@ -67,6 +67,13 @@ class Script(object):
         """
         return self._tree.get(name)
 
+    def new_node(self, type, label, params):
+        cls = registry.nodes[type]
+        n = cls(label=label, **self._nodekwargs)
+        for p, v in params:
+            n.set_param(p, v)
+        return n
+
     def get_nodes_by_attr(self, name, value):
         """
         Find a node by attibute value.
@@ -109,12 +116,5 @@ class Script(object):
             if meta is not None:
                 out[name][meta[0]] = meta[1]
         return out            
-
-    def new_node(self, type, label, params):
-        cls = registry.nodes[type]
-        n = cls(label=label, **self._nodekwargs)
-        for p, v in params:
-            n.set_param(p, v)
-        return n
 
 
