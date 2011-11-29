@@ -29,4 +29,5 @@ class InputOutOfRangeError(NodeError):
 class CircularDagError(NodeError):
     """A node was connected circularly to its own input."""
 
-
+class ScriptError(NodeError):
+    """Miscellaneous script manipulation errors."""
