@@ -17,35 +17,49 @@ class Script(object):
         """
         self._nodekwargs = nodekwargs if nodekwargs is not None \
                 else {}
-        self._script = script
         self._error = None
         self._tree = {}
         self._meta = []
         self._nodemeta = {}
-        self._build_tree()
+        self._build_tree(script)
 
-    def _build_tree(self):
+    def _build_tree(self, script):
         """
         Wire up the nodes in tree order.
         """
-        for name, n in self._script.iteritems():
+        for name, n in script.iteritems():
             if name.startswith("__"):
                 self._meta.append((name, n))
                 continue
             for attr, val in n.iteritems():
                 if attr.startswith("__"):
                     self._nodemeta[name] = (attr, val)
-            self._tree[name] = self._fetch_node(n["type"], name, n["params"])
+            self._tree[name] = self.new_node(n["type"], name, n["params"])
             self._tree[name].ignored = n.get("ignored", False)
-        for name, n in self._script.iteritems():
+        for name, n in script.iteritems():
             if name.startswith("__"):
                 continue
             for i in range(len(n["inputs"])):
                 self._tree[name].set_input(i, self._tree.get(n["inputs"][i]))
 
     def add_node(self, type, label, params):
-        self._tree[label] = self._fetch_node(type, label, params)
+        self._tree[label] = self.new_node(type, label, params)        
         return self._tree[label]
+
+    def replace_node(self, old, new):
+        """Replace a node in the tree with a new one."""
+        assert self._tree[old.label], "Node being replaced '%s' is not in tree" % old.label
+        if not old.arity == new.arity:
+            raise exceptions.ScriptError("Replacement node must have the same "
+                    "number of inputs as that being replaced.")
+        for i in range(old.arity):
+            new.set_input(i, old.input(i))
+        for node in self._tree.values():
+            for i in range(node.arity):
+                if node.input(i) == old:
+                    node.set_input(i, new)
+        del self._tree[old.label]
+        self._tree[new.label] = new                    
 
     def get_node(self, name):
         """
@@ -96,7 +110,7 @@ class Script(object):
                 out[name][meta[0]] = meta[1]
         return out            
 
-    def _fetch_node(self, type, label, params):
+    def new_node(self, type, label, params):
         cls = registry.nodes[type]
         n = cls(label=label, **self._nodekwargs)
         for p, v in params:
