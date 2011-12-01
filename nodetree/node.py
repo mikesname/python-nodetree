@@ -108,61 +108,42 @@ class Node(object):
         self.ignored = ignored
 
     def set_param(self, param, name):
-        """
-        Set a parameter.
-        """
+        """Set a parameter."""
         self._params[param] = name
         self.mark_dirty()
 
     def _set_p(self, p, v):
-        """
-        Set a parameter internally.
-        """
+        """Set a parameter internally."""
         pass
 
     def process(self):
-        """
-        Perform actual processing.
-        """
+        """Perform actual processing."""
         return
 
     def add_parent(self, n):
-        """
-        Add a parent node.
-        """
+        """Add a parent node."""
         if self == n:
             raise exceptions.CircularDagError("added as parent to self", self)
         if not n in self._parents:
             self._parents.append(n)
 
     def has_parents(self):
-        """
-        Check if the node is a terminal node
-        or if there's a tree further down.
-        """
+        """Check if the node is a terminal node
+        or if there's a tree further down."""
         return bool(len(self._parents))
 
     def input(self, num):
-        """
-        Get an input.
-        """
+        """Get an input by index."""
         if num > len(self._inputs) - 1:
             raise exceptions.InputOutOfRangeError("Input '%d'" % num, self)
         return self._inputs[num]
 
     def inputs(self):
-        """
-        Return list of inputs.
-        """
+        """Return list of input nodes."""
         return self._inputs
 
     def set_input(self, num, n):
-        """
-        Set an input.
-
-        num: 0-based input number
-        node: input node
-        """
+        """Set an input by index."""
         if num > len(self._inputs) - 1:
             raise exceptions.InputOutOfRange("Input '%d'" % num, self)
         if n is not None:
@@ -170,59 +151,44 @@ class Node(object):
         self._inputs[num] = n
 
     def mark_dirty(self):
-        """
-        Tell the node it needs to reevaluate.
-        """
+        """Tell the node it needs to reevaluate."""
         self.logger.debug("%s marked dirty", self)
         for parent in self._parents:
             parent.mark_dirty()
         self._cacher.clear_cache(self)
 
     def set_cache(self, cache):
-        """
-        Set the cache on a node, preventing it
-        from eval'ing its inputs.
-        """
+        """Set the cache on a node, preventing it
+        from eval'ing its inputs."""
         self._cacher.set_cache(self, cache)
 
     def eval_input(self, num):
-        """
-        Eval an input node.
-        """
+        """Eval an input node."""
         if self._inputs[num] is not None:
             return self._inputs[num].eval()
 
     def eval_inputs(self):
-        """
-        Eval all inputs and store the data in
-        self._inputdata.
-        """
+        """Eval all inputs and store the data."""
         for i in range(len(self._inputs)):
             self._inputdata[i] = self.eval_input(i)
 
     def get_input_data(self, num):
-        """
-        Fetch data for a given input, eval'ing
-        it if necessary.
-        """
+        """Fetch data for a given input, eval'ing
+        it if necessary."""
         if self._inputdata[num] is None:
             self._inputdata[num] = self.eval_input(num)
             return self._inputdata[num]
         return self._inputdata[num]
 
     def validate_all(self):
-        """
-        Check params are present and correct.
-        """
+        """Check params are present and correct."""
         for n in self._inputs:
             if n is not None:
                 n.validate_all()
         self.validate()                    
 
     def validate(self):
-        """
-        Check the node can execute properly.
-        """
+        """Check the node can execute properly."""
         self.validate_inputs()
         self.validate_parameters()
 
@@ -250,12 +216,10 @@ class Node(object):
                             p.get("name"), val, ", ".join(choices)), self)
 
     def hash_value(self):
-        """
-        Get a representation of this
-        node's current state.  This is a data
-        structure the node type, it's
-        parameters, and it's children's hash_values.
-        """
+        """Get a representation of this node's
+        current state.  This is a data structure
+        the node type, it's parameters, and it's
+        children's hash_values."""
         # if ignore, return the hash of the
         # passthrough input
         if self.arity > 0 and self.ignored:
@@ -277,17 +241,13 @@ class Node(object):
         )
 
     def null_data(self):
-        """
-        What we return when ignored.
-        """
+        """What we return when ignored."""
         if self.arity > 0:
             return self.eval_input(self.passthrough)
 
     def first_active(self):
-        """
-        Get the first node in the tree that is
-        active.  If not ignored this is 'self'.
-        """
+        """Get the first node in the tree that is
+        active.  If not ignored this is 'self'."""
         if self.arity > 0 and self.ignored:
             return self._inputs[self.passthrough].first_active()
         return self
@@ -301,9 +261,7 @@ class Node(object):
         return self.process(*args)
 
     def eval(self):
-        """
-        Eval the node.
-        """
+        """Eval the node."""
         if self.ignored:
             self.logger.debug("Ignoring node: %s", self)
             return self.null_data()
@@ -326,6 +284,7 @@ class Node(object):
 
     def __str__(self):
         return "%s<%s>" % (self.label, self.name)
+
 
 
 
