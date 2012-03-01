@@ -1,6 +1,4 @@
-"""
-Base class for OCR nodes.
-"""
+"""Base class for OCR nodes."""
 
 from __future__ import absolute_import
 
@@ -16,17 +14,13 @@ from . import cache, registry, exceptions
 
 
 def noop_abort_func(*args):
-    """
-    A function for nodes to call that signals that 
-    they should abort.  By default it does nothing.
-    """
+    """A function for nodes to call that signals that 
+    they should abort.  By default it does nothing."""
     return False
 
 def noop_progress_func(*args):
-    """
-    A function for nodes to call that reports on their
-    progress.  By default it does nothing.
-    """
+    """A function for nodes to call that reports on their
+    progress.  By default it does nothing."""
     pass
 
 
@@ -74,10 +68,8 @@ class NodeType(type):
 
 
 class Node(object):
-    """
-    Node object.  Evaluates some input and
-    return the output.    
-    """
+    """Node object.  Evaluates some input and
+    return the output."""
 
     __metaclass__ = NodeType
     abstract = True
@@ -88,9 +80,7 @@ class Node(object):
     def __init__(self, label=None, abort_func=None, 
                 cacher=None,
                 progress_func=None, logger=None, ignored=False):
-        """
-        Initialise a node.
-        """
+        """Initialise a node."""
         self.abort_func = abort_func if abort_func is not None \
                 else noop_abort_func
         self.logger = logger if logger is not None \
