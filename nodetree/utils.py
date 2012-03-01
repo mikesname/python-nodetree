@@ -1,6 +1,4 @@
-"""
-Utils for dealing with Nodes/Plugins.
-"""
+"""Utils for dealing with Nodes/Plugins."""
 
 import json
 import node
@@ -9,13 +7,9 @@ import types
 
 
 class NodeEncoder(json.JSONEncoder):
-    """
-    Encoder for JSONifying nodes.
-    """
+    """Encoder for JSONifying nodes."""
     def default(self, n):
-        """
-        Flatten node for JSON encoding.
-        """
+        """Flatten node for JSON encoding."""
         if issubclass(n, node.Node):
             return dict(
                 name=n.name,
