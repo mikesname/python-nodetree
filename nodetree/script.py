@@ -1,6 +1,4 @@
-"""
-Object representation of a Node script.
-"""
+"""Object representation of a Node script."""
 
 from __future__ import absolute_import
 
@@ -8,13 +6,9 @@ from . import node, registry, exceptions
 
 
 class Script(object):
-    """
-    Object describing the OCR pipeline.
-    """
+    """Object describing a node workflow."""
     def __init__(self, script, nodekwargs=None):
-        """
-        Initialiser.
-        """
+        """Initialiser."""
         self._nodekwargs = nodekwargs if nodekwargs is not None \
                 else {}
         self._error = None
@@ -24,9 +18,7 @@ class Script(object):
         self._build_tree(script)
 
     def _build_tree(self, script):
-        """
-        Wire up the nodes in tree order.
-        """
+        """Wire up the nodes in tree order."""
         for name, n in script.iteritems():
             if name.startswith("__"):
                 self._meta.append((name, n))
@@ -43,6 +35,7 @@ class Script(object):
                 self._tree[name].set_input(i, self._tree.get(n["inputs"][i]))
 
     def add_node(self, type, label, params):
+        """Add a node of the given type, with the given label."""
         self._tree[label] = self.new_node(type, label, params)        
         return self._tree[label]
 
@@ -62,9 +55,7 @@ class Script(object):
         self._tree[new.label] = new                    
 
     def get_node(self, name):
-        """
-        Find a node in the tree.
-        """
+        """Find a node in the tree."""
         return self._tree.get(name)
 
     def new_node(self, type, label, params):
@@ -75,9 +66,7 @@ class Script(object):
         return n
 
     def get_nodes_by_attr(self, name, value):
-        """
-        Find a node by attibute value.
-        """
+        """Find a node by attibute value."""
         nodes = []
         for node in self._tree.itervalues():
             if hasattr(node, name) and getattr(node, name) == value:
@@ -85,16 +74,12 @@ class Script(object):
         return nodes
 
     def get_terminals(self):
-        """
-        Get nodes that end a branch.
-        """
+        """Get nodes that end a branch."""
         return [n for n in self._tree.itervalues() \
                 if not n.has_parents()]
 
     def validate(self):
-        """
-        Call 'validate' on all nodes.
-        """
+        """Call 'validate' on all nodes."""
         errors = {}
         for name, n in self._tree.iteritems():
             try:
@@ -104,6 +89,7 @@ class Script(object):
         return errors                
 
     def serialize(self):
+        """Serialize the script to a plain dictionary."""
         out = {}
         for name, node in self._tree.iteritems():
             out[name] = dict(
