@@ -73,6 +73,11 @@ class Script(object):
                 nodes.append(node)
         return nodes
 
+    def get_detached_inputs(self):
+        """Get nodes that have an unplugged input."""
+        return [n for n in self._tree.itervalues() \
+                if n.inputs() and None in n.inputs()] 
+
     def get_terminals(self):
         """Get nodes that end a branch."""
         return [n for n in self._tree.itervalues() \
